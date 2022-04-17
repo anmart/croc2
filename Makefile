@@ -27,10 +27,10 @@ RGBLINK ?= $(RGBDS)rgblink
 .SECONDEXPANSION:
 .PRECIOUS:
 .SECONDARY:
-.PHONY: all croc2 clean tidy compare tools
+.PHONY: all croc2 clean tidy tools
 
-all: $(rom) compare
-croc2: $(rom) compare
+all: $(rom)
+croc2: $(rom)
 
 clean: tidy
 	find src/gfx \( -iname '*.1bpp' -o -iname '*.2bpp' -o -iname '*.pal' \) -delete
@@ -38,10 +38,6 @@ clean: tidy
 tidy:
 	rm -f $(rom) $(rom_obj) $(rom:.gbc=.map) $(rom:.gbc=.sym) src/rgbdscheck.o
 	$(MAKE) clean -C tools/
-
-compare: $(rom)
-	@$(SHA1) -c rom.sha1
-
 tools:
 	$(MAKE) -C tools/
 

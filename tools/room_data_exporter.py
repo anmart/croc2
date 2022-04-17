@@ -42,6 +42,9 @@ def read_map_table(loc,rom):
 		screen_lists.append(current_level_screen_list)
 	return (world_list,level_lists,screen_lists)
 
+# this will be altering the data format a bit to accomodate some patches to base game
+# entries that are exactly the same except for 1 byte will now be condensed
+# some old exceptions are gone now too
 def read_screen_exits(start_addr, rom):
 	(worlds,levels,screens) = read_map_table(start_addr,rom)
 	bank = int(start_addr/0x4000)
@@ -76,38 +79,26 @@ def read_screen_exits(start_addr, rom):
 			for s_i,s in enumerate(screen_list):
 				s_global = cd.get_global_address(s,bank)
 				screen_string = "{}{}{}ExitTable: ; {:x} ({:x}:{:x})\n".format(world_name,level_name,s_i,s_global,bank,s)
-				amount = rom[s_global]
-				screen_string += "\tdb {}\n".format(amount)
+				prelim_amount = rom[s_global]
+				screen_string_modifier = ""
 				exit_string = "\tbegin_exits \"{}{}{}\"\n".format(world_name,level_name,s_i)
 				exit_entries = [] # I can't believe I have to do this pattern twice, see "entries"
 
 				# another inconsistency, this time I have to hard code it. Some levels have more exit data than they claim, but it's damaged
-				if (w_i,l_i,s_i) == (2,1,0): # Caveman Robo 0
-					amount += 2
 				if (w_i,l_i,s_i) == (3,2,9): # Inca Mayor 9
-					amount -= 2
+					prelim_amount -= 2
 
-				for e_i in range(0,amount):
+				prelim_exit_list = []
+				for e_i in range(0,prelim_amount):
 					e = (0xff00 & rom[s_global + 2 + 2*e_i] << 8)+(0xff & rom[s_global + 1 + 2*e_i])
-					if e < 0x4000:
-						# for issues like the broken caveman exits
-						screen_string += "\tdw ${:x}\n".format(e)
-						continue
 					e_global = cd.get_global_address(e,bank)
-					screen_string += "\tdw {}{}{}Exit_{}\n".format(world_name,level_name,s_i,e_i)
-
 					e_current = e_global
 					x_check = rom[e_current]
 					y_check = rom[e_current+1]
 					jump_type = rom[e_current+2]
 					e_current += 3
-					if (w_i,l_i,s_i,e_i) == (2,1,0,5):
-						# there's some overlap, I have to fix it here
-						local_exit_string = "\texit {}, {}, ".format(y_check,jump_type)
-					else:
-						local_exit_string = "\texit {}, {}, {}, ".format(x_check,y_check,jump_type)
-					if jump_type == 1: # door to a shop. code appears to use 4 values but only uses 3
-						local_exit_string += "{}, {}, {}\n".format(rom[e_current],rom[e_current+1],rom[e_current+2])
+					if jump_type == 1:
+						prelim_exit_list.append(((x_check,y_check),(jump_type,rom[e_current],rom[e_current+1],rom[e_current+2])))
 						e_current += 3
 					else:
 						level = rom[e_current]
@@ -117,18 +108,46 @@ def read_screen_exits(start_addr, rom):
 						new_y = rom[e_current+3]
 						direction = rom[e_current+4]
 						direction = directions[direction]
-						local_exit_string +="{}, {}, {}, {}, {}\n".format(level,screen,new_x,new_y,direction)
+						prelim_exit_list.append(((x_check,y_check),(jump_type,level,screen,new_x,new_y,direction)))
 						e_current += 5
 
+				amount = prelim_amount
 
-					exit_entries.append((e_global,local_exit_string,e_current))
+				local_exit_string = ""
+				unique_exits = 0
+				i = 0
+				while i < prelim_amount:
+					screen_string_modifier += "\tdw {}{}{}Exit_{}\n".format(world_name,level_name,s_i,unique_exits)
+					unique_exits += 1
+					(loc,data) = prelim_exit_list[i]
+					local_exit_string += "\texit {}, {}".format(loc[0],loc[1])
+
+					# trying to cut out some data duplication
+					if i+1 < prelim_amount and data == prelim_exit_list[i+1][1]:
+						# if the next entry has the same data (but different location)
+						(next_x,next_y) = prelim_exit_list[i+1][0]
+						local_exit_string += ", {}, {}".format(next_x,next_y)
+						i += 1
+					else:
+						local_exit_string += ", {}, {}".format(loc[0],loc[1])
+
+					for d in data:
+						local_exit_string += ", {}".format(d)
+					local_exit_string += "\n"
+					i += 1
+
+
+				exit_entries.append((e_global,local_exit_string,e_current))
+
+				screen_string += "\tdb {}\n".format(amount) + screen_string_modifier
+
 
 				# since some entries get linked out of order, sort what we have so the code is correct
 				exit_entries.sort(key=lambda y: y[0])
 				last_exit_end = None
 				for (entry_start, entry, entry_end) in exit_entries:
-					if last_exit_end is not None and entry_start > last_exit_end: # > should probably be != but I have to account for the caveman level
-						exit_string += "WARNING!!!!!! DATA MISMATCH! LAST END: {:x} CURRENT START: {:x}\n".format(last_exit_end,entry_start)
+					#if last_exit_end is not None and entry_start > last_exit_end: # > should probably be != but I have to account for the caveman level
+					#	exit_string += "WARNING!!!!!! DATA MISMATCH! LAST END: {:x} CURRENT START: {:x}\n".format(last_exit_end,entry_start)
 					exit_string += entry
 					last_exit_end = entry_end
 				exit_string += "\tend_exits\n"
@@ -145,8 +164,8 @@ def read_screen_exits(start_addr, rom):
 	entries.sort(key=lambda y: y[0])
 	last_end = None
 	for (entry_start, entry, entry_end) in entries:
-		if last_end is not None and entry_start != last_end:
-			output_string += "WARNING!!!!!! DATA MISMATCH! LAST END: {:x} CURRENT START: {:x}\n".format(last_end,entry_start)
+		#if last_end is not None and entry_start != last_end:
+		#	output_string += "WARNING!!!!!! DATA MISMATCH! LAST END: {:x} CURRENT START: {:x}\n".format(last_end,entry_start)
 		output_string += entry
 		last_end = entry_end
 	print(output_string)

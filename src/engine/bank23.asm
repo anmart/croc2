@@ -26,19 +26,34 @@ Func_8c000: ; 8c000 (23:4000)
 	ld a, b
 	dec a
 	ld_hl_from_table
+
+
+
 	ld a, [hli]
 	cp d
-	jr nz, .asm_8c03d
+	ld a, [hli]
+	jr nz, .try_again
+	cp e
+	jr nz, .try_again
+	jr .accept_warp
+
+.try_again
+	ld a, [hli]
+	cp d
+	jr nz, .fail
 	ld a, [hli]
 	cp e
-	jr nz, .asm_8c03d
+	jr nz, .fail
+
+
+.accept_warp
 	ld a, [hli]
 	ld d, h
 	ld e, l
 	ld hl, JumpTable_Boss042
 	call JumpInTable
 	ld b, $01
-.asm_8c03d
+.fail
 	pop hl
 	dec b
 	jr nz, .asm_8c026
