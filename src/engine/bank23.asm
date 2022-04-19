@@ -1,4 +1,6 @@
-Func_8c000: ; 8c000 (23:4000)
+; checks Croc's X and Y location against a list of exits every single frame
+; If successful, runs one of several 
+TryLevelExits: ; 8c000 (23:4000)
 	ld a, [wPlayerX]
 	swap a
 	rlca
@@ -35,7 +37,7 @@ Func_8c000: ; 8c000 (23:4000)
 	ld a, [hli]
 	ld d, h
 	ld e, l
-	ld hl, JumpTable_Boss042
+	ld hl, JumpTable_8c042
 	call JumpInTable
 	ld b, $01
 .asm_8c03d
@@ -44,7 +46,7 @@ Func_8c000: ; 8c000 (23:4000)
 	jr nz, .asm_8c026
 	ret
 
-JumpTable_Boss042: ; 8c042 (23:4042)
+JumpTable_8c042: ; 8c042 (23:4042)
 	dw Func_8c04c ; standard walking through screen entrance	
 	dw Func_8c08e ; walking through shop door
 	dw Func_8c0b5 ; Jump Jelly

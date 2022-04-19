@@ -29,6 +29,12 @@ ROM0
 	"romheader"
 	org $0150
 	"start"
+ROMX $02
+	org $424d
+	"Bank 2 Level Load"
+ROMX $0b
+	org $5892
+	"Bank b Something"
 WRAM0
 	"WRAM0"
 VRAM $00

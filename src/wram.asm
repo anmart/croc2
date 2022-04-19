@@ -13,7 +13,15 @@ wStoredLevel: ; c9e0
 wStoredScreen: ; c9e1
 	ds $1
 
-	ds $96
+	ds $1
+
+; A bitfield corresponding to which key items have been collected in this level
+; lower 5 bits are the Gems
+; next 3 bits are level specific. (The Items in the box on the pause menu)
+wKeyItems: ; c9e3
+	ds $1
+
+	ds $94
 
 wWorld: ; ca78
 	ds $1
@@ -73,4 +81,14 @@ wPlayerDirection: ; caba
 
 ; stored direction for the player to face when they screen transition or respawn
 wStoredDirection: ; cabb
+	ds $1
+
+	ds $22
+
+; Used in CollectItem as a decrementing counter
+wTempCounter: ; cade
+	ds $1
+
+; Used in CollectItem to keep track of what item croc is in the process of collecting
+wTempKeyItem: ; cadf
 	ds $1
