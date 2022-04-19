@@ -74,3 +74,7 @@ wPlayerDirection: ; caba
 ; stored direction for the player to face when they screen transition or respawn
 wStoredDirection: ; cabb
 	ds $1
+
+SECTION "wram end", WRAM0
+wStoredWorld:
+	ds $1

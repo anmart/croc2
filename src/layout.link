@@ -31,6 +31,8 @@ ROM0
 	"start"
 WRAM0
 	"WRAM0"
+	org $cfff
+	"wram end"
 VRAM $00
 	"VRAM0"
 VRAM $01

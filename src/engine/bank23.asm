@@ -35,6 +35,8 @@ Func_8c000: ; 8c000 (23:4000)
 	jr nz, .try_again
 	cp e
 	jr nz, .try_again
+	inc hl
+	inc hl
 	jr .accept_warp
 
 .try_again
@@ -77,6 +79,7 @@ Func_8c04c: ; 8c04c (23:404c)
 	ld h, d
 	ld l, e
 	ld a, [hli]
+	;ld a, [hli]
 	ld [wStoredLevel], a
 	ld a, [hli]
 	ld [wStoredScreen], a
