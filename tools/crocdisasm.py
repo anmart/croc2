@@ -762,9 +762,7 @@ class Disassembler(object):
 
 						if target_label is None:
 						# if this is a call or jump opcode and the target label is not defined, create an undocumented label descriptor
-							print("what? " + str(local_target_offset) + ", " + str(target_offset) + ", " + str(bank_id))
 							target_label = "Func_%x" % int(target_offset)
-							print("created: " + target_label)
 
 					else:
 					# anything that isn't a call or jump is a load-based command
@@ -919,8 +917,8 @@ if __name__ == "__main__":
 	# argument parser
 	ap = argparse.ArgumentParser()
 	ap.add_argument("-r", dest="rom", default="baserom.gbc")
-	ap.add_argument("-o", dest="filename", default="tcgdisasm_output.asm")
-	ap.add_argument("-s", dest="symfile", default="poketcg.sym")
+	ap.add_argument("-o", dest="filename", default="crocdisasm_output.asm")
+	ap.add_argument("-s", dest="symfile", default="croc2.sym")
 	ap.add_argument("-q", "--quiet", dest="quiet", action="store_true")
 	ap.add_argument("-a", "--append", dest="append", action="store_true")
 	ap.add_argument("-nw", "--no-write", dest="no_write", action="store_true")
