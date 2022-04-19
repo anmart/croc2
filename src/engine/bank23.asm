@@ -27,8 +27,6 @@ Func_8c000: ; 8c000 (23:4000)
 	dec a
 	ld_hl_from_table
 
-
-
 	ld a, [hli]
 	cp d
 	ld a, [hli]
@@ -47,12 +45,11 @@ Func_8c000: ; 8c000 (23:4000)
 	cp e
 	jr nz, .fail
 
-
 .accept_warp
 	ld a, [hli]
 	ld d, h
 	ld e, l
-	ld hl, JumpTable_Boss042
+	ld hl, JumpTable_8c042
 	call JumpInTable
 	ld b, $01
 .fail
@@ -61,7 +58,7 @@ Func_8c000: ; 8c000 (23:4000)
 	jr nz, .asm_8c026
 	ret
 
-JumpTable_Boss042: ; 8c042 (23:4042)
+JumpTable_8c042: ; 8c042 (23:4042)
 	dw Func_8c04c ; standard walking through screen entrance	
 	dw Func_8c08e ; walking through shop door
 	dw Func_8c0b5 ; Jump Jelly
@@ -78,8 +75,15 @@ Func_8c04c: ; 8c04c (23:404c)
 	ld [wLastScreen], a
 	ld h, d
 	ld l, e
+
+	; debug check that nothing else is changing wStoredLevel
+	; debug_assert_memory wStoredWorld, 0 - wStoredLevel needs to be retained
+
+	; handle new world data
 	ld a, [hli]
-	;ld a, [hli]
+	ld [wStoredWorld], a
+
+	ld a, [hli]
 	ld [wStoredLevel], a
 	ld a, [hli]
 	ld [wStoredScreen], a
@@ -105,6 +109,7 @@ Func_8c08e: ; 8c08e (23:408e)
 	ld [$ca79], a
 	ld h, d
 	ld l, e
+	inc hl
 	ld a, [hli]
 	ld [$ca7c], a
 	ld a, [hli]
@@ -160,6 +165,14 @@ Func_8c0b5: ; 8c0b5 (23:40b5)
 	ld [wLastScreen], a
 	ld h, d
 	ld l, e
+
+	; debug check that nothing else is changing wStoredLevel
+	; debug_assert_memory wStoredWorld, 0 - wStoredLevel needs to be retained
+
+	; handle new world data
+	ld a, [hli]
+	ld [wStoredWorld], a
+
 	ld a, [hli]
 	ld [wStoredLevel], a
 	ld a, [hli]
@@ -211,6 +224,14 @@ Func_8c136: ; 8c136 (23:4136)
 	ld [$ca8b], a
 	ld h, d
 	ld l, e
+
+	; debug check that nothing else is changing wStoredLevel
+	; debug_assert_memory wStoredWorld, 0 - wStoredLevel needs to be retained
+
+	; handle new world data
+	ld a, [hli]
+	ld [wStoredWorld], a
+
 	ld a, [hli]
 	ld [wStoredLevel], a
 	ld a, [hli]
@@ -241,6 +262,14 @@ Func_8c1a6: ; 8c1a6 (23:41a6)
 	ld [wLastScreen], a
 	ld h, d
 	ld l, e
+
+	; debug check that nothing else is changing wStoredLevel
+	; debug_assert_memory wStoredWorld, 0 - wStoredLevel needs to be retained
+
+	; handle new world data
+	ld a, [hli]
+	ld [wStoredWorld], a
+
 	ld a, [hli]
 	ld [wStoredLevel], a
 	ld a, [hli]
@@ -279,3 +308,4 @@ Data_Game: ; 8c1f0 (23:41f0)
 	dw IncaExitTables
 
 INCLUDE "data/levels.asm" ; temp
+

@@ -3,3 +3,4 @@ INCLUDE "macros/constants.asm"
 INCLUDE "macros/data.asm"
 
 INCLUDE "macros/rooms.asm"
+INCLUDE "macros/debug.asm"

@@ -27,10 +27,13 @@ RGBLINK ?= $(RGBDS)rgblink
 .SECONDEXPANSION:
 .PRECIOUS:
 .SECONDARY:
-.PHONY: all croc2 clean tidy tools
+.PHONY: debug all croc2 clean tidy tools
 
 all: $(rom)
 croc2: $(rom)
+
+debug: RGBASMFLAGS+= -D DEBUG
+debug: tidy all
 
 clean: tidy
 	find src/gfx \( -iname '*.1bpp' -o -iname '*.2bpp' -o -iname '*.pal' \) -delete
@@ -40,7 +43,6 @@ tidy:
 	$(MAKE) clean -C tools/
 tools:
 	$(MAKE) -C tools/
-
 
 RGBASMFLAGS = -h -i src/ -L -Weverything
 # Create a sym/map for debug purposes if `make` run with `DEBUG=1`

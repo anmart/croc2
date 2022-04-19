@@ -96,9 +96,10 @@ def read_screen_exits(start_addr, rom):
 					x_check = rom[e_current]
 					y_check = rom[e_current+1]
 					jump_type = rom[e_current+2]
+					world = world_names[w_i].upper()
 					e_current += 3
 					if jump_type == 1:
-						prelim_exit_list.append(((x_check,y_check),(jump_type,rom[e_current],rom[e_current+1],rom[e_current+2])))
+						prelim_exit_list.append(((x_check,y_check),(jump_type,world,rom[e_current],rom[e_current+1],rom[e_current+2])))
 						e_current += 3
 					else:
 						level = rom[e_current]
@@ -108,7 +109,7 @@ def read_screen_exits(start_addr, rom):
 						new_y = rom[e_current+3]
 						direction = rom[e_current+4]
 						direction = directions[direction]
-						prelim_exit_list.append(((x_check,y_check),(jump_type,level,screen,new_x,new_y,direction)))
+						prelim_exit_list.append(((x_check,y_check),(jump_type,world, level,screen,new_x,new_y,direction)))
 						e_current += 5
 
 				amount = prelim_amount
@@ -128,6 +129,7 @@ def read_screen_exits(start_addr, rom):
 						(next_x,next_y) = prelim_exit_list[i+1][0]
 						local_exit_string += ", {}, {}".format(next_x,next_y)
 						i += 1
+						amount -= 1
 					else:
 						local_exit_string += ", {}, {}".format(loc[0],loc[1])
 
