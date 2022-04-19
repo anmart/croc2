@@ -1,3 +1,10 @@
+; MODIFIED from base game. Some Inconsistent data was removed, and exits are condensed some. 
+; the layout looks something like this
+; world exit table -> level exit table -> screen exit table -> screen table (amount of exits followed by a pointer for each exit) -> various exit data, different depending on type
+; the exit data starts as: x check, y check, x2 check, y2 check, jump index. (x2 check and y2 check are new, now it can check 2 tiles at once, as that is very common)
+; it checks for croc's x and y locations, then runs different exit code depending on index.
+; an index of 1 means you've entered a shop, the values aren't well known
+; other exits use the following data: new level, new screen, new x, new y, new direction
 SailorExitTables: ; 8c1f8 (23:41f8)
 	dw SailorHubExitTables
 	dw SailorCageExitTables
