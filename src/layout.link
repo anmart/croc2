@@ -29,11 +29,14 @@ ROM0
 	"romheader"
 	org $0150
 	"start"
-ROMX $2
+ROMX $02
 	org $424d
-	"level load"
+	"Bank 2 Level Load"
 	org $7e67
 	"bank 2 free space"
+ROMX $0b
+	org $5892
+	"Bank b Something"
 WRAM0
 	"WRAM0"
 	org $cfff

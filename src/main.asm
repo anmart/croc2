@@ -12,5 +12,8 @@ INCLUDE "engine/bank01.asm"
 SECTION "Bank 2", ROMX[$4000], BANK[$2]
 INCLUDE "engine/bank02.asm"
 
+SECTION "Bank b", ROMX[$4000], BANK[$b]
+INCLUDE "engine/bank0b.asm"
+
 SECTION "Bank 23", ROMX[$4000], BANK[$23]
 INCLUDE "engine/bank23.asm"

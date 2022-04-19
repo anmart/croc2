@@ -1,4 +1,6 @@
-Func_8c000: ; 8c000 (23:4000)
+; checks Croc's X and Y location against a list of exits every single frame
+; If successful, runs one of several functions in ExitJumpTable, usually switching to a new level/screen combo
+TryLevelExits: ; 8c000 (23:4000)
 	ld a, [wPlayerX]
 	swap a
 	rlca
@@ -21,7 +23,7 @@ Func_8c000: ; 8c000 (23:4000)
 	or b
 	ret z
 	inc hl
-.asm_8c026
+.tryNextExit
 	push hl
 	ld a, b
 	dec a
@@ -49,23 +51,24 @@ Func_8c000: ; 8c000 (23:4000)
 	ld a, [hli]
 	ld d, h
 	ld e, l
-	ld hl, JumpTable_8c042
+	ld hl, ExitJumpTable
 	call JumpInTable
-	ld b, $01
+	ld b, 1 ; finish checking if we've found at least one exit
 .fail
 	pop hl
 	dec b
-	jr nz, .asm_8c026
+	jr nz, .tryNextExit
 	ret
 
-JumpTable_8c042: ; 8c042 (23:4042)
-	dw Func_8c04c ; standard walking through screen entrance	
-	dw Func_8c08e ; walking through shop door
-	dw Func_8c0b5 ; Jump Jelly
-	dw Func_8c136 ; Robo Gobbo
-	dw Func_8c1a6 ; Seemingly just used for Dante's arena, maybe for all golden gobbos vs not?
+ExitJumpTable: ; 8c042 (23:4042)
+	dw ExitStandard
+	dw ExitToShop
+	dw ExitJumpJelly
+	dw ExitRoboGobbo
+	dw ExitDante
 
-Func_8c04c: ; 8c04c (23:404c)
+; loads exit data for standard screen to screen transitions
+ExitStandard: ; 8c04c (23:404c)
 	ld a, [$ca6b]
 	and $fe
 	ld [$ca6b], a
@@ -101,10 +104,11 @@ Func_8c04c: ; 8c04c (23:404c)
 	ld [$c5b1], a
 	xor a
 	ld [$c9cf], a
-	call Func_8c1e0
+	call ExitFinish
 	ret
 
-Func_8c08e: ; 8c08e (23:408e)
+; loads seemingly useless data (1 byte shouldn't even be loaded) and opens the shop
+ExitToShop: ; 8c08e (23:408e)
 	ld a, [wWorld]
 	ld [$ca79], a
 	ld h, d
@@ -118,14 +122,15 @@ Func_8c08e: ; 8c08e (23:408e)
 	ld a, [hli]
 	ld [wPlayerY], a
 	ld [wPlayerStoredY], a
-	ld a, [hli]
+	ld a, [hli] ; This ld overlaps level exit data
 	ld [wStoredDirection], a
 	ld a, $03
 	ld [$c5b1], a
-	call Func_8c1e0
+	call ExitFinish
 	ret
 
-Func_8c0b5: ; 8c0b5 (23:40b5)
+; handles placing and using a jump jelly
+ExitJumpJelly: ; 8c0b5 (23:40b5)
 	ld a, [$cabc]
 	and $09
 	ret nz
@@ -139,7 +144,7 @@ Func_8c0b5: ; 8c0b5 (23:40b5)
 	and $04
 	ret z
 	ld a, $02
-	call $21e0 ;Func_21e0
+	call $21e0
 	ld a, [$ff8e]
 	and $04
 	ret z
@@ -193,10 +198,11 @@ Func_8c0b5: ; 8c0b5 (23:40b5)
 	ld [$c9cf], a
 	ld [$c934], a
 	ld b, $12
-	call $16b9 ;Func_16b9
+	call $16b9
 	ret
 
-Func_8c136: ; 8c136 (23:4136)
+; handles using a RoboGobbo
+ExitRoboGobbo: ; 8c136 (23:4136)
 	ld a, [$ca6b]
 	and $01
 	ret nz
@@ -204,7 +210,7 @@ Func_8c136: ; 8c136 (23:4136)
 	and $f0
 	ret z
 	ld a, $01
-	call $21e0 ;Func_21e0
+	call $21e0
 	ld a, [$cabc]
 	and $1b
 	ret nz
@@ -252,10 +258,12 @@ Func_8c136: ; 8c136 (23:4136)
 	ld [$c9cf], a
 	ld b, $2d
 	call $16b9
-	call Func_8c1e0
+	call ExitFinish
 	ret
 
-Func_8c1a6: ; 8c1a6 (23:41a6)
+; Seemingly exclusively handles the entrance to Dante's arena
+; Possibly used to differenciate between any%/100% dante fight?
+ExitDante: ; 8c1a6 (23:41a6)
 	ld a, [wLevel]
 	ld [wLastLevel], a
 	ld a, [wScreen]
@@ -288,10 +296,10 @@ Func_8c1a6: ; 8c1a6 (23:41a6)
 	ld [$c5b1], a
 	xor a
 	ld [$c9cf], a
-	call Func_8c1e0
+	call ExitFinish
 	ret
 
-Func_8c1e0: ; 8c1e0 (23:41e0)
+ExitFinish: ; 8c1e0 (23:41e0)
 	ld a, [$c9f1]
 	ld b, a
 	ld a, [$c9f2]

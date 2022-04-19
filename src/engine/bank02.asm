@@ -1,5 +1,5 @@
-SECTION "level load", ROMX
-Func_824d: ; 824d (2:424d)
+SECTION "Bank 2 Level Load", ROMX
+InitializeLevel: ; 824d (2:424d)
 	call $208d
 	and a
 	ret nz
