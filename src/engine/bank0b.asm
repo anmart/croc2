@@ -42,7 +42,13 @@ CollectItem: ; 2d892 (b:5892)
 	ld a, [wKeyItems]
 	or b
 	ld [wKeyItems], a
-	call $584e ; causes the hooray animation
+
+	; Theoretically this should skip the animation, hopefully with no side effects
+	;call $584e ; causes the hooray animation
+	nop
+	nop
+	nop
+
 	ld b, $10
 	call $16b9
 	jr .finish
@@ -58,3 +64,4 @@ CollectItem: ; 2d892 (b:5892)
 .finish
 	ret
 ; 0x2d8f4
+TEST_2d8f4:
