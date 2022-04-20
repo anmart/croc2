@@ -100,12 +100,6 @@ def read_exits_to_json(start_addr, rom):
 				while i < prelim_amount:
 					(loc,data) = prelim_exit_list[i]
 
-					if data[0] == 1:
-						# skipping shops for now 
-						i+=1
-						amount -= 1
-						continue
-
 					exit_output = {
 							"x1": loc[0],
 							"y1": loc[1],
@@ -114,12 +108,18 @@ def read_exits_to_json(start_addr, rom):
 							"exit_type": data[0],
 							"old_label": "{}{}{}Exit_{}".format(world_names[w_i],level_names[w_i][l_i],s_i,len(screen_exits)),
 							"world": data[1],
-							"level": data[2],
-							"screen": data[3],
-							"new_x": data[4],
-							"new_y": data[5],
-							"new_direction": data[6],
 							}
+
+					if data[0] != 1:
+						exit_output["level"]= data[2]
+						exit_output["screen"]= data[3]
+						exit_output["new_x"]= data[4]
+						exit_output["new_y"]= data[5]
+						exit_output["new_direction"]= data[6]
+					else:
+						exit_output["unknown0"] = data[2]
+						exit_output["unknown1"] = data[3]
+						exit_output["unknown2"] = data[4]
 
 					# trying to cut out some data duplication
 					if i+1 < prelim_amount and data == prelim_exit_list[i+1][1]:
@@ -128,16 +128,53 @@ def read_exits_to_json(start_addr, rom):
 						exit_output["x2"] = next_x
 						exit_output["y2"] = next_y
 						amount -= 1
-
+						i+=1
 					screen_exits.append(exit_output)
 					i += 1
-				if len(screen_exits) > 0:
-					level_exits.append(screen_exits)
-			if len(level_exits) > 0:
-				world_exits[level_names[w_i][l_i]] = level_exits
-		if len(world_exits) > 0:
-			exits[world_names[w_i]] = world_exits
-	print(json.dumps(exits))
+				level_exits.append(screen_exits)
+			world_exits[level_names[w_i][l_i]] = level_exits
+		exits[world_names[w_i]] = world_exits
+	return json.dumps(exits)
+
+# writes a data/levels.asm style file given string json room data
+def write_json_exits(json_data):
+	exits = json.loads(json_data)
+	global_exit_tables = "ExitTables:\n"
+	world_exit_tables = ""
+	level_exit_tables = []
+	for (w_i,world) in exits.items():
+		global_exit_tables += "\tdw {}ExitTables\n".format(w_i)
+		world_exit_tables += "{}ExitTables:\n".format(w_i)
+		for (l_i,level) in world.items():
+			world_exit_tables += "\tdw {}{}ExitTables\n".format(w_i,l_i)
+			level_exit_table = "{}{}ExitTables:\n".format(w_i,l_i)
+			screen_exit_tables = []
+			for (s_i,screen) in enumerate(level):
+				level_exit_table += "\tdw {}{}{}ExitTable\n".format(w_i,l_i,s_i)
+				screen_exit_table = "{}{}{}ExitTable:\n".format(w_i,l_i,s_i)
+				screen_exit_table += "\tdb {}\n".format(len(screen))
+				if len(screen) > 0:
+					exit_data = "\tbegin_exits \"{}{}{}\"\n".format(w_i,l_i,s_i)
+					for (e_i, exit_entry) in enumerate(screen):
+						screen_exit_table += "\tdw {}{}{}Exit_{}\n".format(w_i,l_i,s_i,e_i)
+						exit_data += "\texit ".format(exit_entry)
+						for (d_i, data) in exit_entry.items():
+							if d_i == "old_label":
+								continue
+							exit_data += "{}, ".format(data)
+						exit_data = exit_data[0:-2] + "\n"
+					exit_data += "\tend_exits\n"
+					screen_exit_table += exit_data
+				screen_exit_tables.append(screen_exit_table)
+			for s in screen_exit_tables:
+				level_exit_table += s
+			level_exit_tables.append(level_exit_table)
+
+	print(world_exit_tables)
+	for l in level_exit_tables:
+		print(l)
+
+
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description="A modifiable tool for extracting arbitrary room-based data for croc2")
@@ -151,4 +188,4 @@ if __name__ == "__main__":
 	with open(args.rom, mode='rb') as game:
 		rom = game.read()
 
-	read_exits_to_json(start_addr,rom)
+	write_json_exits(read_exits_to_json(start_addr,rom))

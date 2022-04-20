@@ -317,3 +317,4 @@ Data_Game: ; 8c1f0 (23:41f0)
 
 INCLUDE "data/levels.asm" ; temp
 
+SECTION "bank 23 free space", ROMX

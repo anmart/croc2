@@ -102,3 +102,5 @@ JumpInTable: ; 0771 (0:0771)
 	ld_hl_from_table
 	jp hl
 ; 0x773
+
+SECTION "home free space", ROM0
