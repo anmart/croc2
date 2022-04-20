@@ -94,5 +94,11 @@ wTempKeyItem: ; cadf
 	ds $1
 
 SECTION "wram end", WRAM0
+; For randomization
+wRNG1:
+	ds $1
+wRNG2:
+	ds $1
+
 wStoredWorld:
 	ds $1

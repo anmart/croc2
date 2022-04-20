@@ -44,7 +44,7 @@ ROMX $23
 	"bank 23 free space"
 WRAM0
 	"WRAM0"
-	org $cfff
+	org $cffd
 	"wram end"
 VRAM $00
 	"VRAM0"

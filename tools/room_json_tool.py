@@ -120,6 +120,8 @@ def read_exits_to_json(start_addr, rom):
 						exit_output["unknown0"] = data[2]
 						exit_output["unknown1"] = data[3]
 						exit_output["unknown2"] = data[4]
+					if data[0] == 0:
+						print("\tdw {} + 5".format(exit_output["old_label"]))
 
 					# trying to cut out some data duplication
 					if i+1 < prelim_amount and data == prelim_exit_list[i+1][1]:
@@ -188,4 +190,5 @@ if __name__ == "__main__":
 	with open(args.rom, mode='rb') as game:
 		rom = game.read()
 
-	write_json_exits(read_exits_to_json(start_addr,rom))
+	#write_json_exits(read_exits_to_json(start_addr,rom))
+	read_exits_to_json(start_addr,rom)
