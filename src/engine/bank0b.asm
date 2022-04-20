@@ -58,3 +58,30 @@ CollectItem: ; 2d892 (b:5892)
 .finish
 	ret
 ; 0x2d8f4
+
+	INCROM $2d8f4, $2df99
+
+; loads *something* per screen, flags maybe?
+; this unlocked a rather large section of data that i'll get to *later*
+Func_2df99: ; 2df99 (b:5f99)
+	ld hl, Data_2dfb9
+	ld a, [wWorld]
+	ld_hl_from_table
+	ld a, [wLevel]
+	ld_hl_from_table
+	ld a, [wScreen]
+	ld_hl_from_table
+	ld de, $de8f
+	ld a, $01
+	ld [rSVBK], a ; switch to wram bank 1
+	ld b, $41
+.loop
+	ld a, [hli]
+	ld [de], a
+	inc de
+	dec b
+	jr nz, .loop
+	ret
+; 0x2dfb9
+
+Data_2dfb9:
