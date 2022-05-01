@@ -762,7 +762,8 @@ class Disassembler(object):
 
 						if target_label is None:
 						# if this is a call or jump opcode and the target label is not defined, create an undocumented label descriptor
-							target_label = "Func_%x" % int(target_offset)
+							#target_label = "Func_%x" % int(target_offset)
+							target_label = "$%x" % int(local_target_offset)
 
 					else:
 					# anything that isn't a call or jump is a load-based command
