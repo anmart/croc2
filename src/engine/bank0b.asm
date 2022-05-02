@@ -61,9 +61,7 @@ CollectItem: ; 2d892 (b:5892)
 
 	INCROM $2d8f4, $2df99
 
-; loads *something* per screen, flags maybe?
-; this unlocked a rather large section of data that i'll get to *later*
-Func_2df99: ; 2df99 (b:5f99)
+LoadLevelTriggers: ; 2df99 (b:5f99)
 	ld hl, GameTriggerTables
 	ld a, [wWorld]
 	ld_hl_from_table

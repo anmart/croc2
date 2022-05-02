@@ -1,6 +1,7 @@
 ; Triggers define a location on screen that, when stepped into, will execute a specified function
 ; Each screen has up to 8 triggers made up of the following:
 ; x location, y location, x range, y range, ? (arg), ? (arg), function pointer
+; Pointers are to bank 02
 GameTriggerTables: ; 2dfb9 (b:5fb9)
 	dw SailorTriggerTables
 	dw CossackTriggerTables
@@ -206,10 +207,10 @@ IncaBossTriggerTables: ; 2e119 (b:6119)
 	dw IncaBossTriggerless_2e4dc
 SailorHub0Triggers: ; 2e11d (b:611d)
 	db 5
-	trigger  40, 179,  6,  5,  0,  1, $5fc8
-	trigger 224, 187,  6,  5,  1,  2, $5fc8
-	trigger  64,  35,  6,  5,  2,  4, $5fc8
-	trigger 200,  43,  6,  5, 24, 16, $5fc8
+	trigger  40, 179,  6,  5,  0,  1, Func_9fc8
+	trigger 224, 187,  6,  5,  1,  2, Func_9fc8
+	trigger  64,  35,  6,  5,  2,  4, Func_9fc8
+	trigger 200,  43,  6,  5, 24, 16, Func_9fc8
 	trigger 135, 100,  4,  5,  3,  0, $5c65
 SailorCage0Triggers: ; 2e146 (b:6146)
 	db 1
@@ -226,7 +227,7 @@ SailorCrow4Triggers: ; 2e162 (b:6162)
 	db 3
 	trigger 116, 204, 16, 16,  2,  0, $619e
 	trigger 156, 204, 16, 16,  3,  0, $619e
-	trigger 136,  80,  4,  8, 23,  0, $5fc8
+	trigger 136,  80,  4,  8, 23,  0, Func_9fc8
 SailorItemsTriggerless_2e17b: ; 2e17b (b:617b)
 	db 0
 SailorItems1Triggers: ; 2e17c (b:617c)
@@ -243,10 +244,10 @@ SailorBossTriggerless_2e1ae: ; 2e1ae (b:61ae)
 	db 0
 CossackHub0Triggers: ; 2e1af (b:61af)
 	db 5
-	trigger 100,  44, 12,  5,  4,  1, $5fc8
-	trigger  60,  52, 12,  5,  5,  2, $5fc8
-	trigger 216, 158,  6, 10,  6,  4, $5fc8
-	trigger 220,  37, 12,  5, 25, 32, $5fc8
+	trigger 100,  44, 12,  5,  4,  1, Func_9fc8
+	trigger  60,  52, 12,  5,  5,  2, Func_9fc8
+	trigger 216, 158,  6, 10,  6,  4, Func_9fc8
+	trigger 220,  37, 12,  5, 25, 32, Func_9fc8
 	trigger 128, 125,  6,  5,  0,  0, $5c94
 CossackHerbTriggerless_2e1d8: ; 2e1d8 (b:61d8)
 	db 0
@@ -261,7 +262,7 @@ CossackHerbTriggerless_2e202: ; 2e202 (b:6202)
 	db 0
 CossackHerb4Triggers: ; 2e203 (b:6203)
 	db 1
-	trigger 136,  46,  5,  5,  7,  4, $5fc8
+	trigger 136,  46,  5,  5,  7,  4, Func_9fc8
 CossackHerbTriggerless_2e20c: ; 2e20c (b:620c)
 	db 0
 CossackMinesTriggerless_2e20d: ; 2e20d (b:620d)
@@ -272,7 +273,7 @@ CossackMines2Triggers: ; 2e20e (b:620e)
 	trigger 180,  84,  3,  4, 36,  0, $6056
 CossackMines5Triggers: ; 2e21f (b:621f)
 	db 1
-	trigger  96,  48,  6,  5,  8,  4, $5fc8
+	trigger  96,  48,  6,  5,  8,  4, Func_9fc8
 CossackMines8Triggers: ; 2e228 (b:6228)
 	db 1
 	trigger 212, 176,  1,  0,  0,  0, $64d7
@@ -293,10 +294,10 @@ CossackBossTriggerless_2e25d: ; 2e25d (b:625d)
 	db 0
 CavemanHub0Triggers: ; 2e25e (b:625e)
 	db 5
-	trigger  60,  44, 14,  5, 10,  1, $5fc8
-	trigger 212,  52, 14,  5, 11,  2, $5fc8
-	trigger 220, 180,  6, 12, 12,  4, $5fc8
-	trigger 140,  75, 12,  5, 26, 64, $5fc8
+	trigger  60,  44, 14,  5, 10,  1, Func_9fc8
+	trigger 212,  52, 14,  5, 11,  2, Func_9fc8
+	trigger 220, 180,  6, 12, 12,  4, Func_9fc8
+	trigger 140,  75, 12,  5, 26, 64, Func_9fc8
 	trigger  80, 179,  6,  5,  1,  0, $5c94
 CavemanRobo0Triggers: ; 2e287 (b:6287)
 	db 5
@@ -324,7 +325,7 @@ CavemanRoboTriggerless_2e2fb: ; 2e2fb (b:62fb)
 	db 0
 CavemanRobo5Triggers: ; 2e2fc (b:62fc)
 	db 1
-	trigger 136,  78,  6,  6, 13,  4, $5fc8
+	trigger 136,  78,  6,  6, 13,  4, Func_9fc8
 CavemanRoboTriggerless_2e305: ; 2e305 (b:6305)
 	db 0
 CavemanGears0Triggers: ; 2e306 (b:6306)
@@ -359,7 +360,7 @@ CavemanWaterTriggerless_2e375: ; 2e375 (b:6375)
 CavemanWater2Triggers: ; 2e376 (b:6376)
 	db 2
 	trigger 184, 160,  4,  8, 16,  4, $6337
-	trigger 180, 208, 16,  5, 14,  1, $5fc8
+	trigger 180, 208, 16,  5, 14,  1, Func_9fc8
 CavemanWater3Triggers: ; 2e387 (b:6387)
 	db 2
 	trigger 100,  99,  1,  6,  0,  1, $5d4c
@@ -384,9 +385,9 @@ CavemanBossTriggerless_2e3cd: ; 2e3cd (b:63cd)
 	db 0
 IncaHub0Triggers: ; 2e3ce (b:63ce)
 	db 5
-	trigger 228, 208, 12,  5, 17,  1, $5fc8
-	trigger  24, 208, 12,  5, 18,  2, $5fc8
-	trigger 134,  48, 12,  5, 19,  4, $5fc8
+	trigger 228, 208, 12,  5, 17,  1, Func_9fc8
+	trigger  24, 208, 12,  5, 18,  2, Func_9fc8
+	trigger 134,  48, 12,  5, 19,  4, Func_9fc8
 	trigger 115,  96,  6,  5,  2,  0, $5c94
 	trigger 116,  48,  6,  5,  3,  0, $5c94
 IncaLetterTriggerless_2e3f7: ; 2e3f7 (b:63f7)
@@ -400,7 +401,7 @@ IncaLetterTriggerless_2e411: ; 2e411 (b:6411)
 	db 0
 IncaLetter5Triggers: ; 2e412 (b:6412)
 	db 1
-	trigger 152,  48,  6,  5, 20,  4, $5fc8
+	trigger 152,  48,  6,  5, 20,  4, Func_9fc8
 IncaLetterTriggerless_2e41b: ; 2e41b (b:641b)
 	db 0
 IncaLetter10Triggers: ; 2e41c (b:641c)
@@ -428,7 +429,7 @@ IncaMayor4Triggers: ; 2e462 (b:6462)
 	trigger 116, 180,  3,  4, 66,  0, $6056
 IncaMayor5Triggers: ; 2e46b (b:646b)
 	db 4
-	trigger 120,  80,  6,  5, 21,  4, $5fc8
+	trigger 120,  80,  6,  5, 21,  4, Func_9fc8
 	trigger  36, 123,  2, 14,  1,  0, $641d
 	trigger 220, 123,  2, 14,  2,  0, $641d
 	trigger 132, 155,  8,  3,  0,  0, $6403

@@ -21,7 +21,19 @@ wStoredScreen: ; c9e1
 wKeyItems: ; c9e3
 	ds $1
 
-	ds $94
+wMaximumWorldProgress: ; c9e4
+	ds $1
+
+	ds $4
+
+; a bitfield corresponding to how far the player has progressed
+; upper nibble: worlds beaten, lower nibble: levels beaten in current world
+; From high to low: [inca] [caveman] [cossack] [sailor] [boss] [lv 3] [lv 2] [lv 1]
+; world level progress is reset when changing world, or loaded from wMaximumWorldProgress
+wGameProgress: ; c9e9
+	ds $1
+
+	ds $8e
 
 wWorld: ; ca78
 	ds $1
@@ -91,4 +103,19 @@ wTempCounter: ; cade
 
 ; Used in CollectItem to keep track of what item croc is in the process of collecting
 wTemp_cadf: ; cadf
+	ds $1
+
+	ds $a
+
+wTriggerXRange: ; caea
+	ds $1
+wTriggerYRange: ; caeb
+	ds $1
+wTriggerArg1: ; caec
+	ds $1
+wTriggerArg2: ; caed
+	ds $1
+wTriggerX: ; caee
+	ds $1
+wTriggerY: ; caef
 	ds $1

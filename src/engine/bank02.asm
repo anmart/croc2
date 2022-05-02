@@ -276,30 +276,30 @@ Func_9c00: ; 9c00 (2:5c00)
 	ld [wTempCounter], a ; alright, first value is indeed an amount
 .tryTriggerLoop
 	ld a, [hli]
-	ld b, a ; b = first value
-	ld [$caee], a
+	ld b, a
+	ld [wTriggerX], a
 	ld a, [hli]
-	ld d, a ; d = 2nd value
-	ld [$caef], a
+	ld d, a
+	ld [wTriggerY], a
 	ld a, [hli]
-	ld [$caea], a
+	ld [wTriggerXRange], a
 	ld a, [hli]
-	ld [$caeb], a
+	ld [wTriggerYRange], a
 	ld a, [hli]
-	ld [$caec], a
+	ld [wTriggerArg1], a
 	ld a, [hli]
-	ld [$caed], a ; 3rd-6th thrown into wram
+	ld [wTriggerArg2], a
 	ld a, [wPlayerX]
 	call AbsSub
 	ld c, a
-	ld a, [$caea]
+	ld a, [wTriggerXRange]
 	cp c
 	jr c, .continue
 	ld b, d
 	ld a, [wPlayerY]
 	call AbsSub
 	ld c, a
-	ld a, [$caeb]
+	ld a, [wTriggerYRange]
 	cp c
 	jr c, .continue
 	ld a, [hli]
@@ -323,3 +323,64 @@ Func_9c00: ; 9c00 (2:5c00)
 	ld [$ca69], a
 	ret
 ; 0x9c65
+
+	INCROM $9c65, $9fc8
+
+; Handles "dialog" for all Gobbos outside of levels, as well as some other entities
+; arg1 - seems to choose which dialog is selected, there are special cases in 255a
+; arg2 - if arg2 > 0xf the dialog won't go off before boss is accessible
+Func_9fc8: ; 9fc8 (2:5fc8)
+	call $255a
+	ret z
+	ld a, [$cabc]
+	and $02
+	ld a, [wTriggerArg2]
+	and $f0
+	jr z, .continue
+	ld hl, WorldBitflags
+	ld a, [wWorld]
+	hl_add_a
+	ld b, [hl]
+	ld a, [wGameProgress]
+	and b
+	jr nz, .continue
+	ld a, [wGameProgress]
+	and $07
+	cp $07
+	; if we haven't beaten this world or all the levels in it, and arg2 > $0f, skip dialog
+	ret nz ; this is used to skip dialog with the gobbos outside of boss rooms before they're there
+.continue
+	ld a, [$ca69]
+	or a
+	ret nz
+	ld a, $01
+	ld [$ca69], a
+	ld a, [$ca6b]
+	and $c0
+	ret nz
+	ld c, $00
+	ld a, [wTriggerArg2]
+	ld b, a
+	ld a, [wGameProgress]
+	and b
+	jr z, .asm_a00c
+	ld c, $01
+.asm_a00c
+	ld a, [wTriggerArg1]
+	add a
+	add c
+	ld hl, Data_a01e
+	hl_add_a
+	ld a, [hl]
+	call $abf
+	ret
+; 0xa01a
+
+; Bitflags for the purpose of wGameProgress
+WorldBitflags: ; a01a (2:601a)
+	db 1 << (4 + SAILOR)
+	db 1 << (4 + COSSACK)
+	db 1 << (4 + CAVEMAN)
+	db 1 << (4 + INCA)
+
+Data_a01e: ; a01e (2:601e)
