@@ -102,3 +102,18 @@ JumpInTable: ; 0771 (0:0771)
 	ld_hl_from_table
 	jp hl
 ; 0x773
+
+	INCROM $0773, $2941
+
+; returns the difference between a and b in a
+; the smaller value ends up in b (though is probably never used that way)
+AbsSub: ; 2941 (0:2941)
+	cp b
+	jr nc, .sub
+	ld c, b
+	ld b, a
+	ld a, c
+.sub
+	sub b
+	ret
+; 0x2949

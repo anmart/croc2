@@ -151,6 +151,74 @@ def read_screen_exits(start_addr, rom):
 		last_end = entry_end
 	print(output_string)
 
+def read_screen_triggers(start_addr, rom):
+	(worlds,levels,screens) = read_map_table(start_addr,rom)
+	bank = int(start_addr/0x4000)
+	entries = []
+	start_local = cd.get_local_address(start_addr)
+	global_string = "GameTriggerTables: ; {:x} ({:x}:{:x})\n".format(start_addr,bank,start_local)
+	for w_i,w in enumerate(worlds):
+		w_global = cd.get_global_address(w,bank)
+		world_name = world_names[w_i]
+		global_string += "\tdw {}TriggerTables\n".format(world_name)
+		world_string = "{}TriggerTables: ; {:x} ({:x}:{:x})\n".format(world_name, w_global,bank,w)
+		for l_i,l in enumerate(levels[w_i]):
+			l_global = cd.get_global_address(l,bank)
+			level_name = level_names[w_i][l_i]
+
+			world_string += "\tdw {}{}TriggerTables\n".format(world_name,level_name)
+			level_string = "{}{}TriggerTables: ; {:x} ({:x}:{:x})\n"\
+					.format(world_name,level_name,l_global,bank,l)
+			triggerless_entries = []
+			for s_i,s in enumerate(screens[w_i][l_i]):
+				s_global = cd.get_global_address(s,bank)
+
+				amt = rom[s_global]
+
+				# check amt first to account for the duplicated 0-entrys
+				if amt != 0:
+					level_string += "\tdw {}{}{}Triggers\n".format(world_name,level_name,s_i)
+					screen_string = "{}{}{}Triggers: ; {:x} ({:x}:{:x})\n"\
+						.format(world_name,level_name,s_i,s_global,bank,s)
+
+					screen_string += "\tdb {}\n".format(amt)
+					for t in range(0,amt):
+						s_current = s_global + 1 + t*8
+						x_loc = rom[s_current]
+						y_loc = rom[s_current+1]
+						x_range = rom[s_current+2]
+						y_range = rom[s_current+3]
+						arg_0 = rom[s_current+4]
+						arg_1 = rom[s_current+5]
+						jump_loc = (0xff00 & rom[s_current+7] << 8) + (0xff & rom[s_current+6]) 
+						screen_string += "\ttrigger {:3d}, {:3d}, {:2d}, {:2d}, {:2d}, {:2d}, ${:x}\n"\
+								.format(x_loc,y_loc,x_range,y_range,arg_0,arg_1,jump_loc)
+					entries.append((s_global,screen_string, s_global + 1 +8*amt))
+				else:
+					level_string += "\tdw {}{}Triggerless_{:x}\n".format(world_name,level_name,s_global)
+					if s_global not in triggerless_entries:
+						screen_string = "{}{}Triggerless_{:x}: ; {:x} ({:x}:{:x})\n\tdb 0\n"\
+							.format(world_name,level_name,s_global,s_global,bank,s)
+						triggerless_entries.append(s_global)
+						entries.append((s_global,screen_string, s_global+1))
+			entries.append((l_global,level_string, l_global + 2*screen_amounts[w_i][l_i]))
+		entries.append((w_global,world_string,w_global + 2*level_amount))
+	entries.append((start_addr,global_string,start_addr + 2*world_amount))
+
+	# since some entries get linked out of order, sort what we have so the code is correct
+	output_string = ""
+	entries.sort(key=lambda y: y[0])
+	last_end = None
+	for (entry_start, entry, entry_end) in entries:
+		if last_end is not None and entry_start != last_end:
+			output_string += "WARNING!!!!!! DATA MISMATCH! LAST END: {:x} CURRENT START: {:x}\n"\
+					.format(last_end,entry_start)
+		output_string += entry
+		last_end = entry_end
+	print(output_string)
+
+
+
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description="A modifiable tool for extracting arbitrary room-based data for croc2")
 	parser.add_argument("-r", dest="rom", default="baserom.gbc")
@@ -163,4 +231,4 @@ if __name__ == "__main__":
 	with open(args.rom, mode='rb') as game:
 		rom = game.read()
 
-	read_screen_exits(start_addr,rom)
+	read_screen_triggers(start_addr,rom)

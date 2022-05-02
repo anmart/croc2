@@ -18,7 +18,7 @@ CollectItem: ; 2d892 (b:5892)
 	jr .continue
 .tryItemCheck
 	ld a, [hli]
-	ld [wTempKeyItem], a
+	ld [wTemp_cadf], a
 	inc hl
 	inc hl
 	ld a, [hli]
@@ -34,7 +34,7 @@ CollectItem: ; 2d892 (b:5892)
 	call $2941
 	cp $06
 	jr nc, .continueEarly
-	ld a, [wTempKeyItem] ; If code gets here, croc is standing on a gem location
+	ld a, [wTemp_cadf] ; If code gets here, croc is standing on a gem location
 	ld b, a
 	ld a, [wKeyItems]
 	and b
@@ -64,7 +64,7 @@ CollectItem: ; 2d892 (b:5892)
 ; loads *something* per screen, flags maybe?
 ; this unlocked a rather large section of data that i'll get to *later*
 Func_2df99: ; 2df99 (b:5f99)
-	ld hl, Data_2dfb9
+	ld hl, GameTriggerTables
 	ld a, [wWorld]
 	ld_hl_from_table
 	ld a, [wLevel]
@@ -84,4 +84,4 @@ Func_2df99: ; 2df99 (b:5f99)
 	ret
 ; 0x2dfb9
 
-Data_2dfb9:
+INCLUDE "src/data/level_triggers.asm"

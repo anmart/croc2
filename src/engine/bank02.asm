@@ -266,20 +266,20 @@ Func_8eff: ; 8eff (2:4eff)
 ; I believe this handles level trigger checking
 Func_9c00: ; 9c00 (2:5c00)
 	xor a
-	ld [wTempKeyItem], a ; TODO: change wTempKeyItem to be generic
+	ld [wTemp_cadf], a
 	ld a, $01
 	ld [rSVBK], a
 	ld hl, $de8f
 	ld a, [hli]
 	or a
 	ret z
-	ld [wTempCounter], a
-.asm_9c12
+	ld [wTempCounter], a ; alright, first value is indeed an amount
+.tryTriggerLoop
 	ld a, [hli]
-	ld b, a
+	ld b, a ; b = first value
 	ld [$caee], a
 	ld a, [hli]
-	ld d, a
+	ld d, a ; d = 2nd value
 	ld [$caef], a
 	ld a, [hli]
 	ld [$caea], a
@@ -288,34 +288,35 @@ Func_9c00: ; 9c00 (2:5c00)
 	ld a, [hli]
 	ld [$caec], a
 	ld a, [hli]
-	ld [$caed], a
+	ld [$caed], a ; 3rd-6th thrown into wram
 	ld a, [wPlayerX]
-	call $2941
+	call AbsSub
 	ld c, a
 	ld a, [$caea]
 	cp c
-	jr c, .asm_9c50
+	jr c, .continue
 	ld b, d
 	ld a, [wPlayerY]
-	call $2941
+	call AbsSub
 	ld c, a
 	ld a, [$caeb]
 	cp c
-	jr c, .asm_9c50
+	jr c, .continue
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
 	ld a, $01
-	ld [wTempKeyItem], a
+	ld [wTemp_cadf], a
 	jp hl
-.asm_9c50
+
+.continue
 	inc hl
 	inc hl
 	ld a, [wTempCounter]
 	dec a
 	ld [wTempCounter], a
-	jr nz, .asm_9c12
-	ld a, [wTempKeyItem]
+	jr nz, .tryTriggerLoop
+	ld a, [wTemp_cadf]
 	or a
 	ret nz
 	xor a

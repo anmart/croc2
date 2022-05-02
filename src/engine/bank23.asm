@@ -12,7 +12,7 @@ TryLevelExits: ; 8c000 (23:4000)
 	and $1f ; a is the upper 5 bits of wPlayerY
 	ld e, a
 	ld a, [wWorld]
-	ld hl, Data_Game
+	ld hl, GameExitTables
 	ld_hl_from_table
 	ld a, [wLevel]
 	ld_hl_from_table
@@ -262,10 +262,4 @@ ExitFinish: ; 8c1e0 (23:41e0)
 	call $20b8
 	ret
 
-Data_Game: ; 8c1f0 (23:41f0)
-	dw SailorExitTables
-	dw CossackExitTables
-	dw CavemanExitTables
-	dw IncaExitTables
-
-INCLUDE "data/levels.asm" ; temp
+INCLUDE "data/level_exits.asm"

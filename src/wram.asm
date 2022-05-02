@@ -90,5 +90,5 @@ wTempCounter: ; cade
 	ds $1
 
 ; Used in CollectItem to keep track of what item croc is in the process of collecting
-wTempKeyItem: ; cadf
+wTemp_cadf: ; cadf
 	ds $1

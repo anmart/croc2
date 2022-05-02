@@ -8,6 +8,11 @@
 ; it checks for croc's x and y locations, then runs different exit code depending on index.
 ; an index of 1 means you've entered a shop, the values aren't well known
 ; other exits use the following data: new level, new screen, new x, new y, new direction
+GameExitTables: ; 8c1f0 (23:41f0)
+	dw SailorExitTables
+	dw CossackExitTables
+	dw CavemanExitTables
+	dw IncaExitTables
 SailorExitTables: ; 8c1f8 (23:41f8)
 	dw SailorHubExitTables
 	dw SailorCageExitTables
