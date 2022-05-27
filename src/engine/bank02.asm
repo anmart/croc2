@@ -369,10 +369,10 @@ Func_9fc8: ; 9fc8 (2:5fc8)
 	ld a, [wTriggerArg1]
 	add a
 	add c
-	ld hl, Data_a01e
+	ld hl, Data_a01e ; list of dialogs
 	hl_add_a
 	ld a, [hl]
-	call $abf
+	call $abf ; display dialog
 	ret
 ; 0xa01a
 
